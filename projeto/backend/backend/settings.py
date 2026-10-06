@@ -2,11 +2,18 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'z8*^9cd*0g#18(=cy&rzfa9wj4oowb&*8r$_uw6+f7qeh=t9##'
+from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
-DEBUG = True
-
-ALLOWED_HOSTS = ['localhost', '51.143.150.114', 'www.meudominio.com.br']
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+DEBUG = os.getenv('DJANGO_DEBUG', 'true').lower() == 'true'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '')
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured('Configure DJANGO_SECRET_KEY para produ??o.')
+    SECRET_KEY = 'development-only-do-not-use-in-production'
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -52,20 +59,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-DATABASES = {
-    'local': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    },
-        'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'djangoreact',
-        'USER': 'djangoreact',
-        'PASSWORD': 'khjgvhkjlGKJFJHGK(*&^%$$%^',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-}
+DATABASES = {'default': {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+}}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -82,9 +79,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -94,14 +91,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3001",
-    "http://127.0.0.1:3001",
-    "http://51.143.150.114"
-]
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+CORS_ALLOWED_ORIGINS = os.getenv(
+    'DJANGO_CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173'
+).split(',')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
+}
