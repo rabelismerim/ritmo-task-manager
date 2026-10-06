@@ -137,11 +137,3 @@ npm run preview
 ```
 
 Os testes da API verificam autenticação, isolamento entre usuários e ciclo de vida das tarefas. Os testes do navegador usam respostas controladas para verificar login, criação, conclusão, filtros, exclusão, logout e erro de autenticação. As capturas usam a API real.
-
-## Configuração e publicação
-
-Consulte os arquivos `.env.example` de cada aplicação. `.env`, dependências, banco local e ambiente virtual não são versionados. SQLite é o padrão local. Para usar PostgreSQL existente, configure `DATABASES` e instale o driver antes de migrar; as migrations originais foram preservadas.
-
-Em produção, use HTTPS, servidor de aplicação apropriado, `DJANGO_DEBUG=false`, chave aleatória em `DJANGO_SECRET_KEY` e hosts e origens CORS corretos. Execute `manage.py check --deploy`. Sair remove o token de `sessionStorage`, mas não o revoga no servidor. As fontes usam Google Fonts com fallback local.
-
-As rotas genéricas de usuários e grupos foram removidas; sua administração permanece no Django Admin. Listas mantêm `item_set`, mas não retornam o antigo campo `url`. O frontend foi migrado de Create React App para Vite e os assets do template sem uso foram retirados.
